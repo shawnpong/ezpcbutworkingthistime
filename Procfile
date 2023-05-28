@@ -1,2 +1,2 @@
-web: cd FRONTEND && npm start
+web: cd FRONTEND && npm install && npm start
 worker: python manage.py runserver
