@@ -1,2 +1,0 @@
-worker: cd.. && python manage.py runserver
-web: cd FRONTEND && npm start
