@@ -12,9 +12,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
-    // "node": "18.15.0",
-    // "npm": "9.6.7"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,9 +37,4 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
-  // "engines": {
-  //   "node": "18.15.0",
-  //   "npm": "9.6.7"
-  // }
 }
