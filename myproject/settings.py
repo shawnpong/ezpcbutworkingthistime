@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'myapp',
     'rest_framework',
     'corsheaders',
-    'myproject',
+    'myproject'
 ]
 
 MIDDLEWARE = [
@@ -136,6 +136,3 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'
 ]
-
-import django_heroku
-django_heroku.settings(locals())
