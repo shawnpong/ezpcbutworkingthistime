@@ -20,18 +20,18 @@ export class MyModel extends Component {
     }
 
     FilterFn(){
-        var MyModelIdFilter = this.state.MyModelIdFilter;
-        var NameFilter = this.state.NameFilter;
-        var SizeFilter = this.state.SizeFilter;
+        var MyModelIdFilter = this.state.MyModelIdFilter ?? '';
+        var NameFilter = this.state.NameFilter ?? '';
+        var SizeFilter = this.state.SizeFilter ?? '';
 
         var filteredData = this.state.mymodelWithoutFilter.filter(
             function(el){
                 return el.MyModelId.toString().toLowerCase().includes(
                     MyModelIdFilter.toString().trim().toLowerCase()
-                )&&
+                ) &&
                 el.Name.toString().toLowerCase().includes(
                     NameFilter.toString().trim().toLowerCase()
-                )&&
+                ) &&
                 el.Size.toString().toLowerCase().includes(
                     SizeFilter.toString().trim().toLowerCase()
                 )
@@ -131,7 +131,7 @@ export class MyModel extends Component {
             body:JSON.stringify({
                 MyModelId:this.state.MyModelId,
                 Name:this.state.Name,
-                // Size:this.state.Size
+                Size:this.state.Size
             })
         })
         .then(res=>res.json())
