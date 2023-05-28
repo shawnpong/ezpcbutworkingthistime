@@ -11,14 +11,69 @@ export class MyModel extends Component {
             modalTitle:"",
             Name:"",
             Size:"",
-            MyModelId: 0
+            MyModelId: 0,
+
+            MyModelIdFilter: "",
+            NameFilter: "",
+            mymodelWithoutFilter: []
         }
     }
+
+    FilterFn(){
+        var MyModelIdFilter = this.state.MyModelIdFilter;
+        var NameFilter = this.state.NameFilter;
+        var SizeFilter = this.state.SizeFilter;
+
+        var filteredData = this.state.mymodelWithoutFilter.filter(
+            function(el){
+                return el.MyModelId.toString().toLowerCase().includes(
+                    MyModelIdFilter.toString().trim().toLowerCase()
+                )&&
+                el.Name.toString().toLowerCase().includes(
+                    NameFilter.toString().trim().toLowerCase()
+                )&&
+                el.Size.toString().toLowerCase().includes(
+                    SizeFilter.toString().trim().toLowerCase()
+                )
+            }
+        );
+
+        this.setState({mymodel:filteredData})
+    }
+
+    sortResult(prop,asc){
+        var sortedData = this.state.mymodelWithoutFilter.sort(function(a,b){
+            if(asc){
+                return (a[prop]>b[prop])?1:((a[prop]<b[prop])?-1:0)
+            }
+            else {
+                return (b[prop]>a[prop])?1:((b[prop]<a[prop])?-1:0)
+            }
+        });
+
+        this.setState({mymodel:sortedData});
+    }
+
+    changeMyModelIdFilter = (e)=> {
+        this.state.MyModelIdFilter = e.target.value;
+        this.FilterFn();
+    }
+
+    changeNameFilter = (e)=> {
+        this.state.NameFilter = e.target.value;
+        this.FilterFn();
+    }
+
+    changeSizeFilter = (e)=> {
+        this.state.SizeFilter = e.target.value;
+        this.FilterFn();
+    }
+
     refreshList(){
         fetch(variables.API_URL+'mymodel/')
         .then(response=>response.json())
         .then(data=>{
-            this.setState({mymodel:data});
+            this.setState({mymodel:data, mymodelWithoutFilter:data});
         });
     }
 
@@ -129,12 +184,66 @@ export class MyModel extends Component {
                     <thead>
                         <tr>
                             <th>
+                                <div className = "d-flex flex-row">
+                                <input className = "form-control m-2"
+                                onChange = {this.changeMyModelIdFilter}
+                                placeholder = "Filter"/>
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("MyModelId", true)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                                </button>
+
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("MyModelId", false)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                                </button>
+                                </div>
                                 MyModelId
                             </th>
                             <th>
+                            <div className = "d-flex flex-row">
+                            <input className = "form-control m-2"
+                                onChange = {this.changeNameFilter}
+                                placeholder = "Filter"/>
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("Name", true)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                                </button>
+
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("Name", false)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                                </button>
+                                </div>
                                 Name
                             </th>
                             <th>
+                            <div className = "d-flex flex-row">
+                            <input className = "form-control m-2"
+                                onChange = {this.changeSizeFilter}
+                                placeholder = "Filter"/>
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("Size", true)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                                </button>
+
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("Size", false)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                                </button>
+                                </div>
                                 Size
                             </th>
                             <th>
