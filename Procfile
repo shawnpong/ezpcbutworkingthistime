@@ -1,2 +1,2 @@
-web: cd FRONTEND && serve -s build
+web: cd FRONTEND && npm start
 worker: cd BACKEND && python manage.py runserver
