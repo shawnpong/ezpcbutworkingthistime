@@ -19,6 +19,7 @@ from django.urls import path, include
 from myapp.views import MyModelApi
 # from django.conf.urls import url, include
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path(r'^', include ('myapp.urls')),
