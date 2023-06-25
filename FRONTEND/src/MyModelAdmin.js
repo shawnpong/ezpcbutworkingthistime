@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { variables } from './Variables.js';
 import { tsConstructorType } from '@babel/types';
 
-export class MyModel extends Component {
+export class MyModelAdmin extends Component {
     constructor(props) {
         super(props);
 
@@ -11,35 +11,34 @@ export class MyModel extends Component {
             modalTitle:"",
             Name:"",
             Size:"",
+            Manufacturer:"",
             MyModelId: 0,
 
             MyModelIdFilter: "",
             NameFilter: "",
+            SizeFilter: "",
+            ManufacturerFilter:"",
             mymodelWithoutFilter: []
         }
     }
 
-    FilterFn(){
+    FilterFn() {
         var MyModelIdFilter = this.state.MyModelIdFilter ?? '';
         var NameFilter = this.state.NameFilter ?? '';
         var SizeFilter = this.state.SizeFilter ?? '';
-
-        var filteredData = this.state.mymodelWithoutFilter.filter(
-            function(el){
-                return el.MyModelId.toString().toLowerCase().includes(
-                    MyModelIdFilter.toString().trim().toLowerCase()
-                ) &&
-                el.Name.toString().toLowerCase().includes(
-                    NameFilter.toString().trim().toLowerCase()
-                ) &&
-                el.Size.toString().toLowerCase().includes(
-                    SizeFilter.toString().trim().toLowerCase()
-                )
-            }
-        );
-
-        this.setState({mymodel:filteredData})
-    }
+        var ManufacturerFilter = this.state.ManufacturerFilter ?? '';
+      
+        var filteredData = this.state.mymodelWithoutFilter.filter(function(el) {
+          var isMyModelIdMatch = MyModelIdFilter === '' || el.MyModelId.toString().toLowerCase().trim().includes(MyModelIdFilter.toString().toLowerCase().trim());
+          var isNameMatch = NameFilter === '' || el.Name.toString().toLowerCase().trim().includes(NameFilter.toString().toLowerCase().trim());
+          var isSizeMatch = SizeFilter === '' || el.Size.toString().toLowerCase().trim().includes(SizeFilter.toString().toLowerCase().trim());
+          var isManufacturerMatch = ManufacturerFilter === '' || el.Manufacturer.toString().toLowerCase().trim().includes(ManufacturerFilter.toString().toLowerCase().trim());
+      
+          return isMyModelIdMatch && isNameMatch && isSizeMatch && isManufacturerMatch;
+        });
+      
+        this.setState({ mymodel: filteredData });
+      }
 
     sortResult(prop,asc){
         var sortedData = this.state.mymodelWithoutFilter.sort(function(a,b){
@@ -69,6 +68,11 @@ export class MyModel extends Component {
         this.FilterFn();
     }
 
+    changeManufacturerFilter = (e)=> {
+        this.state.ManufacturerFilter = e.target.value;
+        this.FilterFn();
+    }
+
     refreshList(){
         fetch(variables.API_URL+'mymodel/')
         .then(response=>response.json())
@@ -85,10 +89,24 @@ export class MyModel extends Component {
         this.setState({Name:e.target.value});
     }
 
+    changeMyModelId =(e)=>{
+        this.setState({MyModelId:e.target.value});
+    }
+
+    changeMyModelManufacturer =(e)=>{
+        this.setState({Manufacturer:e.target.value});
+    }
+
+    changeMyModelSize =(e)=>{
+        this.setState({Size:e.target.value});
+    }
+
     addClick(){
         this.setState({
             modalTitle: "Add MyModel",
-            MyModelId: 0,
+            MyModelId:"",
+            Manufacturer:"",
+            Size:"",
             Name:""
         });
     }
@@ -97,7 +115,9 @@ export class MyModel extends Component {
         this.setState({
             modalTitle: "Edit MyModel",
             MyModelId: dep.MyModelId,
-            Name:dep.Name
+            Manufacturer: dep.Manufacturer,
+            Name:dep.Name,
+            Size:dep.Size
         });
     }
 
@@ -109,7 +129,10 @@ export class MyModel extends Component {
                 'Content-Type': 'application/json'
             },
             body:JSON.stringify({
-                Name:this.state.Name
+                MyModelId:this.state.MyModelId,
+                Manufacturer:this.state.Manufacturer,
+                Name:this.state.Name,
+                Size:this.state.Size
             })
         })
         .then(res=>res.json())
@@ -130,6 +153,7 @@ export class MyModel extends Component {
             },
             body:JSON.stringify({
                 MyModelId:this.state.MyModelId,
+                Manufacturer:this.state.Manufacturer,
                 Name:this.state.Name,
                 Size:this.state.Size
             })
@@ -169,6 +193,7 @@ export class MyModel extends Component {
             modalTitle,
             Name,
             Size,
+            Manufacturer,
             MyModelId
         }=this.state;
         return (
@@ -203,6 +228,27 @@ export class MyModel extends Component {
                                 </button>
                                 </div>
                                 MyModelId
+                            </th>
+                            <th>
+                                <div className = "d-flex flex-row">
+                                <input className = "form-control m-2"
+                                onChange = {this.changeManufacturerFilter}
+                                placeholder = "Filter"/>
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("Manufacturer", true)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                                </button>
+
+                                <button type = "button" className = "btn btn-light"
+                                onClick = {()=> this.sortResult("Manufacturer", false)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
+                                <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                                </button>
+                                </div>
+                                Manufacturer
                             </th>
                             <th>
                             <div className = "d-flex flex-row">
@@ -255,6 +301,7 @@ export class MyModel extends Component {
                         {mymodel.map(dep =>
                             <tr key={dep.MyModelId}>
                                 <td>{dep.MyModelId}</td>
+                                <td>{dep.Manufacturer}</td>
                                 <td>{dep.Name}</td>
                                 <td>{dep.Size}</td>
                                 <td>
@@ -290,10 +337,28 @@ export class MyModel extends Component {
                             </div>
                             <div className = "modal-body">
                                 <div className = "input-group mb-3">
+                                    <span className = "input-group-text">MyModelId</span>
+                                    <input type = "text" className = "form-control"
+                                    value = {MyModelId}
+                                    onChange = {this.changeMyModelId}/>
+                                </div>
+                                <div className = "input-group mb-3">
+                                    <span className = "input-group-text">Manufacturer</span>
+                                    <input type = "text" className = "form-control"
+                                    value = {Manufacturer}
+                                    onChange = {this.changeMyModelManufacturer}/>
+                                </div>
+                                <div className = "input-group mb-3">
                                     <span className = "input-group-text">Name</span>
                                     <input type = "text" className = "form-control"
                                     value = {Name}
                                     onChange = {this.changeMyModelName}/>
+                                </div>
+                                <div className = "input-group mb-3">
+                                    <span className = "input-group-text">Size</span>
+                                    <input type = "text" className = "form-control"
+                                    value = {Size}
+                                    onChange = {this.changeMyModelSize}/>
                                 </div>
                                 {MyModelId == 0?
                                 <button type = "button"
