@@ -3,7 +3,7 @@ import './App.css';
 import {Home} from './Home';
 import {MyModelUser} from './MyModelUser';
 import {MyModelAdmin} from './MyModelAdmin';
-import {BrowserRouter as Router, Route, Routes, NavLink} from 'react-router-dom';
+import {HashRouter as Router, Route, Routes, NavLink} from 'react-router-dom';
 
 function App() {
   const appStyle = {
