@@ -35,7 +35,7 @@ function App() {
         </ul>
       </nav>
       <Routes>
-        <Route path="/user" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path = "/home" element = {<Home />}/>
         <Route path = "/admin" element = {<MyModelAdmin />}/>
         <Route path = "/user" element = {<MyModelUser />}/>
