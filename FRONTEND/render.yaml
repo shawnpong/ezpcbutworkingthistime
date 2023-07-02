@@ -1,8 +1,0 @@
-routes:
-  - src: /
-    headers:
-      - key: Access-Control-Allow-Origin
-        value: '*'
-    continue: true
-    checkPathTraverse: false
-    spa: true
