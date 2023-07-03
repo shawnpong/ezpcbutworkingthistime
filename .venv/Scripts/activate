@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Pongster\Documents\GitHub\ezpcbutworkingthistime\.venv"
+VIRTUAL_ENV="c:\Users\Pongster\Documents\GitHub\ezpcbutworkingthistime\.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
