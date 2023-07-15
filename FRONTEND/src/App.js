@@ -4,6 +4,8 @@ import {Home} from './Home';
 import {MyModelUser} from './MyModelUser';
 import {MyModelAdmin} from './MyModelAdmin';
 import {BrowserRouter as Router, Route, Routes, NavLink} from 'react-router-dom';
+import {Login} from './login';
+
 
 function App() {
   const appStyle = {
@@ -35,9 +37,10 @@ function App() {
         </ul>
       </nav>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path = "/" element={<Home />} />
         <Route path = "/home" element = {<Home />}/>
-        <Route path = "/admin" element = {<MyModelAdmin />}/>
+        <Route path = "/admin" element = {<Login />}/>
+        <Route path = "/adminsuccessful" element = {<MyModelAdmin />} />
         <Route path = "/user" element = {<MyModelUser />}/>
       </Routes>
     </div>

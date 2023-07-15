@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { variables } from './Variables.js';
 import { tsConstructorType } from '@babel/types';
+import { useHistory } from 'react-router-dom';
+import { LogoutButton } from './login.js'
 
 export class MyModelAdmin extends Component {
     constructor(props) {
@@ -21,7 +23,7 @@ export class MyModelAdmin extends Component {
             mymodelWithoutFilter: []
         }
     }
-
+    
     FilterFn() {
         var MyModelIdFilter = this.state.MyModelIdFilter ?? '';
         var NameFilter = this.state.NameFilter ?? '';
@@ -129,20 +131,27 @@ export class MyModelAdmin extends Component {
                 'Content-Type': 'application/json'
             },
             body:JSON.stringify({
-                MyModelId:this.state.MyModelId,
+                // MyModelId:this.state.MyModelId,
                 Manufacturer:this.state.Manufacturer,
                 Name:this.state.Name,
                 Size:this.state.Size
             })
         })
-        .then(res=>res.json())
-        .then((result)=>{
-            alert(result);
-            this.refreshList();
-        }, (error)=>{
-            alert('Failed');
-        })
-    }
+        .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error('Failed to add: ' + res.status + ' ' + res.statusText);
+      }
+    })
+    .then(result => {
+      alert(result);
+      this.refreshList();
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+}
 
     updateClick(){
         fetch(variables.API_URL+"mymodel/",{
@@ -185,8 +194,6 @@ export class MyModelAdmin extends Component {
         })
     }
     }
-
-
     render() {
         const {
             mymodel,
@@ -198,6 +205,9 @@ export class MyModelAdmin extends Component {
         }=this.state;
         return (
             <div>
+                {/* <button type="button" className="btn btn-primary m-2 float-end" onClick={this.handleLogout}>
+        Logout
+            </button> */}
                 <button type = "button"
                 className = "btn btn-primary m-2 float-end"
                 data-bs-toggle = "modal"
@@ -336,12 +346,12 @@ export class MyModelAdmin extends Component {
                                 </button>
                             </div>
                             <div className = "modal-body">
-                                <div className = "input-group mb-3">
+                                {/* <div className = "input-group mb-3">
                                     <span className = "input-group-text">MyModelId</span>
                                     <input type = "text" className = "form-control"
                                     value = {MyModelId}
                                     onChange = {this.changeMyModelId}/>
-                                </div>
+                                </div> */}
                                 <div className = "input-group mb-3">
                                     <span className = "input-group-text">Manufacturer</span>
                                     <input type = "text" className = "form-control"
