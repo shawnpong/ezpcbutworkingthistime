@@ -5,3 +5,9 @@ class MyModel(models.Model):
     Manufacturer = models.CharField(max_length=100)
     Name = models.CharField(max_length=100, unique=True)
     Size = models.CharField(max_length=100)
+
+class Manufacturers(models.Model):
+    Manufacturer = models.CharField(max_length=100, unique=True)
+
+class Sizes(models.Model):
+    Size = models.CharField(max_length=100, unique=True)

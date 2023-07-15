@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from myapp.views import MyModelApi
+from myapp.views import MyModelApi, SizesApi, ManufacturersApi
 # from django.conf.urls import url, include
 
 
@@ -25,5 +25,8 @@ urlpatterns = [
     # path(r'^', include ('myapp.urls')),
     # path('myapp/', include('myapp.urls')),
     path('mymodel/', MyModelApi, name = 'mymodel-api'),
-    path('mymodel/<int:id>/', MyModelApi)
+    path('mymodel/<int:id>/', MyModelApi),
+    path('sizes/', SizesApi, name='sizes-api'),
+    path('sizes/<int:id>/', SizesApi),
+    path('manufacturers/', ManufacturersApi, name='manufacturers-api'),
 ]

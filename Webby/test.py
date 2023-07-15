@@ -2,13 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+# api_url = 'https://ezpcdjango.onrender.com/'
+api_url = 'http://127.0.0.1:8000/'
+
 url = "https://www.pc-kombo.com/us/components/cases"
+
 response = requests.get(url)
 html_content = response.content
 soup = BeautifulSoup(html_content, 'html.parser')
-
-# Parse the connection URL
-conn_url = "postgres://casesdb_user:cXFNrwwgVIHyoplFjAsZ0J0lzVXUE3D4@dpg-cigfqqtgkuvojj902dv0-a.singapore-postgres.render.com/casesdb"
 
 div_elements = soup.find_all('div', class_='column col-10 col-lg-8 col-sm-12')
 link_count = 0  # Counter to keep track of the number of links processed
@@ -42,28 +43,41 @@ for div_element in div_elements:
 
         # Insert the extracted data into the database
         # Adjust the code below to fit your database integration method
-        payload = {
-            # 'MyModelId': '',
+        mymodel = {
             'Manufacturer': manufacturer,
             'Name': names,
+            'Size': size
+        }
+        manufacturers = {
+            'Manufacturer': manufacturer
+        }
+        sizes = {
             'Size': size
         }
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-        api_url = 'https://ezpcdjango.onrender.com/mymodel/'
-        # api_url = 'http://127.0.0.1:8000/mymodel/'
 
-        response = requests.post(api_url, data=json.dumps(payload), headers= headers)
+        response = requests.post(api_url+"mymodel/", data=json.dumps(mymodel), headers= headers)
         if response.status_code == 200:
-            print("Data inserted successfully")
+            print("mymodel inserted successfully")
         else:
-            print("Failed to insert data")
+            print("mymodel failed to insert data")
+        response = requests.post(api_url+"manufacturers/", data=json.dumps(manufacturers), headers= headers)
+        if response.status_code == 200:
+            print("manufacturers inserted successfully")
+        else:
+            print("manufacturers failed to insert data")
+        response = requests.post(api_url+"sizes/", data=json.dumps(sizes), headers= headers)
+        if response.status_code == 200:
+            print("sizes inserted successfully")
+        else:
+            print("sizes failed to insert data")
 
         link_count += 1  # Increment the link counter
 
-        if link_count >= 3:  # Check if the desired number of links have been processed
+        if link_count >= 2:  # Check if the desired number of links have been processed
             break  # Exit the loop once the limit is reached
     else:
         continue  # Continue to the next iteration of the outer loop

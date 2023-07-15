@@ -16,7 +16,7 @@ for table_name in table_names:
     print(table_name[0])
 
 # Get column names of a specific table
-table_name = 'myapp_mymodel'
+table_name = 'myapp_manufacturers'
 cursor.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}'")
 column_names = cursor.fetchall()
 print("Column Names of", table_name, ":")

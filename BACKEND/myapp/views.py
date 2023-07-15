@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
-from myapp.models import MyModel
-from myapp.serializers import MyModelSerializer
+from myapp.models import MyModel, Manufacturers, Sizes
+from myapp.serializers import MyModelSerializer, ManufacturersSerializer, SizesSerializer
 
 @csrf_exempt
 def MyModelApi(request, id=0):
@@ -35,3 +35,32 @@ def MyModelApi(request, id=0):
         mymodel = MyModel.objects.get(MyModelId=id)
         mymodel.delete()
         return JsonResponse('Deleted Successfully', safe=False)
+
+@csrf_exempt
+def ManufacturersApi(request):
+    if request.method == 'GET':
+        manufacturers = Manufacturers.objects.all()
+        serializer = ManufacturersSerializer(manufacturers, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        manufacturer_data = JSONParser().parse(request)
+        serializer = ManufacturersSerializer(data=manufacturer_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse('Manufacturer added successfully', safe=False)
+        return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def SizesApi(request):
+    if request.method == 'GET':
+        sizes = Sizes.objects.all()
+        serializer = SizesSerializer(sizes, many=True)
+        print(serializer.data)  # Add this print statement
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        size_data = JSONParser().parse(request)
+        serializer = SizesSerializer(data=size_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse('Size added successfully', safe=False)
+        return JsonResponse(serializer.errors, status=400)
