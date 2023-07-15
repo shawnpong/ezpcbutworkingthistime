@@ -2,8 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-# api_url = 'https://ezpcdjango.onrender.com/'
-api_url = 'http://127.0.0.1:8000/'
+api_url = 'https://ezpcdjango.onrender.com/'
+# api_url = 'http://127.0.0.1:8000/'
 
 url = "https://www.pc-kombo.com/us/components/cases"
 
