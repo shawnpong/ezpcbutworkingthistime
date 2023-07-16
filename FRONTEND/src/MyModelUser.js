@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import { variables } from './Variables.js';
+import axios from 'axios';
 import { tsConstructorType } from '@babel/types';
 
 export class MyModelUser extends Component {
     constructor(props) {
         super(props);
+
+        this.changeMyModelIdFilter = this.changeMyModelIdFilter.bind(this);
+        this.changeNameFilter = this.changeNameFilter.bind(this);
+        this.changeSizeFilter = this.changeSizeFilter.bind(this);
+        this.changeManufacturerFilter = this.changeManufacturerFilter.bind(this);
 
         this.state = {
             mymodel: [],
@@ -18,82 +24,93 @@ export class MyModelUser extends Component {
             NameFilter: "",
             SizeFilter: "",
             ManufacturerFilter:"",
-            mymodelWithoutFilter: []
+            mymodelWithoutFilter: [],
+            manufacturers: [],
+            sizes: [],
         }
     }
 
-    // FilterFn(){
-    //     var MyModelIdFilter = this.state.MyModelIdFilter ?? '';
-    //     var NameFilter = this.state.NameFilter ?? '';
-    //     var SizeFilter = this.state.SizeFilter ?? '';
-
-    //     var filteredData = this.state.mymodelWithoutFilter.filter(
-    //         function(el){
-    //             return el.MyModelId.toString().toLowerCase().includes(
-    //                 MyModelIdFilter.toString().trim().toLowerCase()
-    //             ) &&
-    //             el.Name.toString().toLowerCase().includes(
-    //                 NameFilter.toString().trim().toLowerCase()
-    //             ) &&
-    //             el.Size.toString().toLowerCase() === (
-    //                 SizeFilter.toString().trim().toLowerCase()
-    //             )
-    //         }
-    //     );
-
-    //     this.setState({mymodel:filteredData})
-    // }
-
     FilterFn() {
-        var MyModelIdFilter = this.state.MyModelIdFilter ?? '';
-        var NameFilter = this.state.NameFilter ?? '';
-        var SizeFilter = this.state.SizeFilter ?? '';
-        var ManufacturerFilter = this.state.ManufacturerFilter ?? '';
+        const {
+          MyModelIdFilter,
+          NameFilter,
+          SizeFilter,
+          ManufacturerFilter,
+          mymodelWithoutFilter
+        } = this.state;
       
-        var filteredData = this.state.mymodelWithoutFilter.filter(function(el) {
-          var isMyModelIdMatch = MyModelIdFilter === '' || el.MyModelId.toString().toLowerCase().trim().includes(MyModelIdFilter.toString().toLowerCase().trim());
-          var isNameMatch = NameFilter === '' || el.Name.toString().toLowerCase().trim().includes(NameFilter.toString().toLowerCase().trim());
-          var isSizeMatch = SizeFilter === '' || el.Size.toString().toLowerCase().trim() === SizeFilter.toString().toLowerCase().trim();
-          var isManufacturerMatch = ManufacturerFilter === '' || el.Manufacturer.toString().toLowerCase().trim() === ManufacturerFilter.toString().toLowerCase().trim();
+        const filteredData = mymodelWithoutFilter.filter(el => {
+          const isMyModelIdMatch = MyModelIdFilter === '' || el.MyModelId.toString().toLowerCase().trim().includes(MyModelIdFilter.toString().toLowerCase().trim());
+          const isNameMatch = NameFilter === '' || el.Name.toString().toLowerCase().trim().includes(NameFilter.toString().toLowerCase().trim());
+          const isSizeMatch = SizeFilter === '' || el.Size.toString().toLowerCase().trim() === SizeFilter.toString().toLowerCase().trim();
+          const isManufacturerMatch = ManufacturerFilter === '' || el.Manufacturer.toString().toLowerCase().trim() === ManufacturerFilter.toString().toLowerCase().trim();
       
           return isMyModelIdMatch && isNameMatch && isSizeMatch && isManufacturerMatch;
         });
       
         this.setState({ mymodel: filteredData });
       }
-
-    sortResult(prop,asc){
-        var sortedData = this.state.mymodelWithoutFilter.sort(function(a,b){
-            if(asc){
-                return (a[prop]>b[prop])?1:((a[prop]<b[prop])?-1:0)
-            }
-            else {
-                return (b[prop]>a[prop])?1:((b[prop]<a[prop])?-1:0)
-            }
+      
+      sortResult(prop, asc) {
+        const {
+          NameFilter,
+          SizeFilter,
+          ManufacturerFilter,
+          mymodelWithoutFilter
+        } = this.state;
+      
+        const sortedData = mymodelWithoutFilter.sort((a, b) => {
+          const aValue = a[prop].toString().toLowerCase().trim();
+          const bValue = b[prop].toString().toLowerCase().trim();
+      
+          // Compare the values based on the sorting order (asc or desc)
+          if (asc) {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
         });
+      
+        // Apply all the filter options
+        const filteredData = sortedData.filter(el => {
+          const isNameMatch = NameFilter === '' || el.Name.toString().toLowerCase().trim().includes(NameFilter.toString().toLowerCase().trim());
+          const isSizeMatch = SizeFilter === '' || el.Size.toString().toLowerCase().trim() === SizeFilter.toString().toLowerCase().trim();
+          const isManufacturerMatch = ManufacturerFilter === '' || el.Manufacturer.toString().toLowerCase().trim() === ManufacturerFilter.toString().toLowerCase().trim();
+      
+          return isNameMatch && isSizeMatch && isManufacturerMatch;
+        });
+      
+        this.setState({ mymodel: filteredData });
+      }
+      
 
-        this.setState({mymodel:sortedData});
-    }
+    changeMyModelIdFilter = (e) => {
+        this.setState({ MyModelIdFilter: e.target.value }, () => {
+          this.FilterFn();
+        });
+      }
+      
 
-    changeMyModelIdFilter = (e)=> {
-        this.state.MyModelIdFilter = e.target.value;
-        this.FilterFn();
-    }
 
-    changeNameFilter = (e)=> {
-        this.state.NameFilter = e.target.value;
-        this.FilterFn();
-    }
+    changeNameFilter = (e) => {
+        this.setState({ NameFilter: e.target.value }, () => {
+          this.FilterFn();
+        });
+      }
 
-    changeSizeFilter = (e)=> {
-        this.state.SizeFilter = e.target.value;
-        this.FilterFn();
-    }
+    changeSizeFilter = (e) => {
+        this.setState({ SizeFilter: e.target.value }, () => {
+          this.FilterFn();
+        });
+      }
+      
 
-    changeManufacturerFilter = (e)=> {
-        this.state.ManufacturerFilter = e.target.value;
-        this.FilterFn();
-    }
+      changeManufacturerFilter = (e) => {
+        this.setState({ ManufacturerFilter: e.target.value }, () => {
+          this.FilterFn();
+        });
+      }
+      
 
     refreshList(){
         fetch(variables.API_URL+'mymodel/')
@@ -104,20 +121,60 @@ export class MyModelUser extends Component {
     }
 
     componentDidMount(){
+        this.fetchManufacturers();
+        this.fetchSizes();
         this.refreshList();
+    }
+
+    fetchManufacturers() {
+        fetch(variables.API_URL+ "manufacturers/")
+        .then(response => response.json())
+        .then(data => {
+            this.setState({ manufacturers: data }); // Update the state with fetched manufacturers
+        })
+        .catch(error => {
+        console.error('Error fetching manufacturers:', error);
+        });
+    }
+
+    fetchSizes() {
+        fetch(variables.API_URL+ "sizes/")
+        .then(response => response.json())
+        .then(data => {
+            this.setState({ sizes: data }); // Update the state with fetched manufacturers
+        })
+        .catch(error => {
+        console.error('Error fetching sizes:', error);
+        });
     }
 
     changeMyModelName =(e)=>{
         this.setState({Name:e.target.value});
     }
 
-    addClick(){
+    addClick() {
         this.setState({
-            modalTitle: "Add MyModel",
-            MyModelId: 0,
-            Name:""
+          modalTitle: "Add MyModel",
+          MyModelId: 0,
+          Name: "",
+          MyModelIdFilter: "",
+          NameFilter: "",
+          SizeFilter: "",
+          ManufacturerFilter: "",
         });
-    }
+      }
+      
+    clearFilters() {
+        this.setState({
+          MyModelIdFilter: "",
+          NameFilter: "",
+          SizeFilter: "",
+          ManufacturerFilter: "",
+        }, () => {
+          this.FilterFn();
+        });
+      }
+      
 
     editClick(dep){
         this.setState({
@@ -194,8 +251,8 @@ export class MyModelUser extends Component {
             mymodel,
             modalTitle,
             Name,
-            Size,
-            Manufacturer,
+            sizes,
+            manufacturers,
             MyModelId
         }=this.state;
         return (
@@ -211,17 +268,18 @@ export class MyModelUser extends Component {
                     <thead>
                         <tr>
                         <th>
-<div className="d-flex flex-row">
-  <select className="form-control m-2" onChange={this.changeManufacturerFilter}>
-    <option disabled={false} value="">
-          --Choose an option--
-        </option>
-    {/* <option value=""></option> */}
-    <option value="Fractal Design">Fractal Design</option>
-    <option value="NZXT">NZXT</option>
-    <option value="Lian Li">Lian Li</option>
-  </select>
-  </div>
+                        <div className="d-flex flex-row">
+          <select className="form-control m-2" onChange={this.changeManufacturerFilter}>
+            <option disabled={false} value="">
+              --Choose an option--
+            </option>
+            {this.state.manufacturers.map(manufacturer => (
+              <option key={manufacturer.id} value={manufacturer.id}>
+                {manufacturer.Manufacturer}
+              </option>
+            ))}
+          </select>
+        </div>
   Manufacturer
 </th>
                             {/* <th>
@@ -267,18 +325,20 @@ export class MyModelUser extends Component {
                                 Name
                             </th>
                             <th>
-<div className="d-flex flex-row">
+                            <div className="d-flex flex-row">
   <select className="form-control m-2" onChange={this.changeSizeFilter}>
     <option disabled={false} value="">
-          --Choose an option--
-        </option>
-    {/* <option value=""></option> */}
-    <option value="mini-ITX">mini-ITX</option>
-    <option value="micro-ATX">micro-ATX</option>
-    <option value="ATX">ATX</option>
+      --Choose an option--
+    </option>
+    {this.state.sizes.map(size => (
+      <option key={size.id} value={size.id}>
+        {size.Size}
+      </option>
+    ))}
   </select>
-  </div>
-  Size
+</div>
+Size
+
 </th>
 
                             {/* <th>

@@ -1,14 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// const LogoutButton = () => {
-//   const navigate = useNavigate();
-//   localStorage.removeItem('loggedIn'); // Clear the login state
-//   navigate('/admin'); // Redirect to the "/admin" page
-// };
+const LogoutButton = () => {
+  const navigate = useNavigate();
 
-// export { LogoutButton };
+  const handleLogout = () => {
+    localStorage.removeItem('loggedIn');
+    navigate('/admin');
+  };
 
+  return (
+    <button type="button" className="btn btn-primary m-2 float-end" onClick={handleLogout}>
+      Logout
+    </button>
+  );
+};
+
+export default LogoutButton;
+
+export const MyModelAdmin = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('loggedIn');
+    if (isLoggedIn !== 'true') {
+      navigate('/admin');
+    }
+  }, [navigate]);
+
+  // Rest of your code
+
+  return (
+    <div>
+      <LogoutButton />
+      {/* Rest of your code */}
+    </div>
+  );
+};
 
 export function Login() {
   const navigate = useNavigate();
@@ -42,27 +70,34 @@ export function Login() {
   };
 
   return (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       <h2>Login</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      <br />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      <br />
-      <button onClick={handleLogin}>Login</button>
+      <div className="form-group" style={{ margin: 'auto', width: '250px' }}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="form-control"
+          style={{ width: '100%' }}
+        />
+      </div>
+      <div className="form-group" style={{ margin: 'auto', width: '250px' }}>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="form-control"
+          style={{ width: '100%' }}
+        />
+      </div>
+      <br/>
+      <button onClick={handleLogin} className="btn btn-primary">Login</button>
     </div>
-  );
+  );  
 }
 
 

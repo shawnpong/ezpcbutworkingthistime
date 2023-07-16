@@ -64,3 +64,37 @@ def SizesApi(request):
             serializer.save()
             return JsonResponse('Size added successfully', safe=False)
         return JsonResponse(serializer.errors, status=400)
+    
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
+@api_view(['POST'])
+def MyModelBatchCreateApi(request):
+    mymodels_data = request.data
+    mymodels_serializer = MyModelSerializer(data=mymodels_data, many=True)
+    if mymodels_serializer.is_valid():
+        mymodels_serializer.save()
+        return Response('Batch Added Successfully')
+    else:
+        return Response(mymodels_serializer.errors, status=400)
+
+@api_view(['POST'])
+def ManufacturersBatchCreateApi(request):
+    manufacturers_data = request.data
+    manufacturers_serializer = ManufacturersSerializer(data=manufacturers_data, many=True)
+    if manufacturers_serializer.is_valid():
+        manufacturers_serializer.save()
+        return Response('Batch Added Successfully')
+    else:
+        return Response(manufacturers_serializer.errors, status=400)
+
+@api_view(['POST'])
+def SizesBatchCreateApi(request):
+    sizes_data = request.data
+    sizes_serializer = SizesSerializer(data=sizes_data, many=True)
+    if sizes_serializer.is_valid():
+        sizes_serializer.save()
+        return Response('Batch Added Successfully')
+    else:
+        return Response(sizes_serializer.errors, status=400)
+

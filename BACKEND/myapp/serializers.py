@@ -4,7 +4,7 @@ from myapp.models import MyModel, Manufacturers, Sizes
 class MyModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyModel
-        fields=('MyModelId', 'Manufacturer', 'Name', 'Size')
+        fields=('MyModelId', 'Manufacturer', 'Name', 'Size', 'Link')
 
 class ManufacturersSerializer(serializers.ModelSerializer):
     class Meta:

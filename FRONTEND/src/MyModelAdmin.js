@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { variables } from './Variables.js';
 import { tsConstructorType } from '@babel/types';
 import { useHistory } from 'react-router-dom';
-import { LogoutButton } from './login.js'
+import  LogoutButton  from './login.js';
 
 export class MyModelAdmin extends Component {
     constructor(props) {
@@ -20,7 +20,9 @@ export class MyModelAdmin extends Component {
             NameFilter: "",
             SizeFilter: "",
             ManufacturerFilter:"",
-            mymodelWithoutFilter: []
+            mymodelWithoutFilter: [],
+            manufacturers: [],
+            sizes: [],
         }
     }
     
@@ -83,8 +85,42 @@ export class MyModelAdmin extends Component {
         });
     }
 
+    handleBeforeUnload = (event) => {
+        event.preventDefault();
+        localStorage.removeItem('loggedIn');
+      };
+
     componentDidMount(){
+        window.addEventListener('beforeunload', this.handleBeforeUnload);
+        this.fetchManufacturers();
+        this.fetchSizes();
         this.refreshList();
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('beforeunload', this.handleBeforeUnload);
+      }
+
+    fetchManufacturers() {
+        fetch(variables.API_URL+ "manufacturers/")
+        .then(response => response.json())
+        .then(data => {
+            this.setState({ manufacturers: data }); // Update the state with fetched manufacturers
+        })
+        .catch(error => {
+        console.error('Error fetching manufacturers:', error);
+        });
+    }
+
+    fetchSizes() {
+        fetch(variables.API_URL+ "sizes/")
+        .then(response => response.json())
+        .then(data => {
+            this.setState({ sizes: data }); // Update the state with fetched manufacturers
+        })
+        .catch(error => {
+        console.error('Error fetching sizes:', error);
+        });
     }
 
     changeMyModelName =(e)=>{
@@ -205,9 +241,7 @@ export class MyModelAdmin extends Component {
         }=this.state;
         return (
             <div>
-                {/* <button type="button" className="btn btn-primary m-2 float-end" onClick={this.handleLogout}>
-        Logout
-            </button> */}
+                <LogoutButton />
                 <button type = "button"
                 className = "btn btn-primary m-2 float-end"
                 data-bs-toggle = "modal"
@@ -310,7 +344,7 @@ export class MyModelAdmin extends Component {
                     <tbody>
                         {mymodel.map(dep =>
                             <tr key={dep.MyModelId}>
-                                <td>{dep.MyModelId}</td>
+                                <td >{dep.MyModelId}</td>
                                 <td>{dep.Manufacturer}</td>
                                 <td>{dep.Name}</td>
                                 <td>{dep.Size}</td>
