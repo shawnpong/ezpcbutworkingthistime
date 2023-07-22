@@ -1,6 +1,7 @@
 import asyncio
 import httpx
 from bs4 import BeautifulSoup
+import re
 
 api_url = 'http://127.0.0.1:8000/'
 url = "https://www.pc-kombo.com/us/components/cases"
@@ -38,9 +39,14 @@ async def process_link(link, mymodels, manufacturers, sizes):
                 for dt_tag in dt_tags:
                     dd_tag = dt_tag.find_next_sibling('dd')
                     if dd_tag:
-                        gpu = dd_tag.text.strip()
-                        print("GPU:", gpu)
-                        # sizes.append({'Size': size})
+                        gpu_text = dd_tag.text.strip()
+                        gpu_match = re.search(r'\d+', gpu_text)
+                        if gpu_match:
+                            gpu = int(gpu_match.group())
+                            print("GPU:", gpu)
+                        else:
+                            print("No GPU length number found.")
+                            gpu = None
 
             manufacturer = None
             for asd in asds:
@@ -56,7 +62,7 @@ async def process_link(link, mymodels, manufacturers, sizes):
                 'Manufacturer': manufacturer,
                 'Name': names,
                 'Size': size,
-                'GPU' : gpu,
+                'GPU': gpu,
                 'Link': link
             }
             mymodels.append(mymodel)
@@ -111,7 +117,7 @@ async def main():
 
     tasks = []
     batch_size = 100
-    batch_delay = 5  # Seconds to wait between batches
+    batch_delay = 1  # Seconds to wait between batches
 
     for div_element in soup.find_all('div', class_='column col-10 col-lg-8 col-sm-12'):
         for link in div_element.find_all('a'):

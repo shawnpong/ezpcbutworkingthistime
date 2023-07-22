@@ -151,8 +151,19 @@ export class MyModelAdmin extends Component {
     }
 
     changeMyModelGPU = (e) => {
-        this.setState({ GPU: e.target.value });
-    }
+        // Extract the value from the input
+        const inputValue = e.target.value;
+    
+        // Use a regular expression to check if the input contains only numeric characters
+        const numericRegex = /^[0-9]*$/;
+    
+        // Check if the input matches the numeric regex
+        if (numericRegex.test(inputValue)) {
+            // If it's a valid numeric input, update the state
+            this.setState({ GPU: inputValue });
+        }
+        // If the input contains non-numeric characters, do nothing (or show an error message)
+    };
 
     changeMyModelLink = (e) => {
         this.setState({ Link: e.target.value });
@@ -167,6 +178,7 @@ export class MyModelAdmin extends Component {
             Name: "",
             Link: "",
             GPU: "",
+            isCreating: true,
         });
     }
 
@@ -179,31 +191,22 @@ export class MyModelAdmin extends Component {
             Size: dep.Size,
             Link: dep.Link,
             GPU: dep.GPU,
+            isCreating: false,
         });
     }
 
     createClick() {
         const { Manufacturer, Name, Size, Link, GPU } = this.state;
-
-        // Check if GPU is null or empty string before proceeding
-        if (!GPU || GPU.trim() === '') {
-            alert('Please input a GPU length');
-            return; // Do not proceed with the API call
-        }
-
-        // Check if the GPU value ends with 'mm', if not, add 'mm' to it
-        const GPULength = GPU.trim().endsWith('mm') ? GPU.trim() : GPU.trim() + ' mm';
-
         // Prepare the request body
         const requestBody = {
             Manufacturer,
             Name,
             Size,
-            GPU: GPULength, // Use the formatted GPULength
+            GPU, // Use the formatted GPULength
         };
 
         // Add the Link to the requestBody as a string if it is not an empty string
-        if (Link.trim() !== '') {
+        if (Link !== '') {
             requestBody.Link = Link;
         } else {
             requestBody.Link = null; // Set the Link to null explicitly if it is empty
@@ -229,35 +232,24 @@ export class MyModelAdmin extends Component {
                 alert(result);
                 this.refreshList();
             })
-            .catch(error => {
-                alert(error.message);
-            });
+            // .catch(error => {
+            //     alert(error.message);
+            // });
     }
 
 
     updateClick() {
         const { MyModelId, Manufacturer, Name, Size, Link, GPU } = this.state;
-
-        // Check if GPU is null or empty string before proceeding
-        if (!GPU || GPU.trim() === '') {
-            alert('Please input a GPU length');
-            return; // Do not proceed with the API call
-        }
-
-        // Check if the GPU value ends with 'mm', if not, add 'mm' to it
-        const GPULength = GPU.trim().endsWith('mm') ? GPU.trim() : GPU.trim() + ' mm';
-
-        // Prepare the request body
         const requestBody = {
             MyModelId,
             Manufacturer,
             Name,
             Size,
-            GPU: GPULength, // Use the formatted GPULength
+            GPU,
         };
 
         // Add the Link to the requestBody as a string if it is not an empty string
-        if (Link.trim() !== '') {
+        if (Link !== '') {
             requestBody.Link = Link;
         } else {
             requestBody.Link = null; // Set the Link to null explicitly if it is empty
@@ -281,9 +273,6 @@ export class MyModelAdmin extends Component {
                 alert('Failed');
             });
     }
-
-
-
 
     deleteClick(id) {
         if (window.confirm('Are you sure?')) {
@@ -313,7 +302,8 @@ export class MyModelAdmin extends Component {
             Link,
             GPU,
             Manufacturer,
-            MyModelId
+            MyModelId,
+            isCreating,
         } = this.state;
         return (
             <div>
@@ -427,7 +417,7 @@ export class MyModelAdmin extends Component {
                                         </svg>
                                     </button>
                                 </div>
-                                Supported GPU Length
+                                Supported GPU Length(mm)
                             </th>
                             <th>
                                 Prices
@@ -489,56 +479,42 @@ export class MyModelAdmin extends Component {
                             <div className="modal-body">
                                 <div className="input-group mb-3">
                                     <span className="input-group-text">Manufacturer</span>
-                                    <input type="text" className="form-control"
-                                        value={Manufacturer}
-                                        onChange={this.changeMyModelManufacturer} />
+                                    <input type="text" className="form-control" value={Manufacturer} onChange={this.changeMyModelManufacturer} />
+                                    <small className="text-muted">* Required</small>
                                 </div>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text">Name</span>
-                                    <input type="text" className="form-control"
-                                        value={Name}
-                                        onChange={this.changeMyModelName} />
+                                    <input type="text" className="form-control" value={Name} onChange={this.changeMyModelName} />
                                     <small className="text-muted">* Required</small>
                                 </div>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text">Size</span>
-                                    <input type="text" className="form-control"
-                                        value={Size}
-                                        onChange={this.changeMyModelSize} />
+                                    <input type="text" className="form-control" value={Size} onChange={this.changeMyModelSize} />
+                                    <small className="text-muted">* Required</small>
                                 </div>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text">Supported GPU length</span>
-                                    <input type="text" className="form-control"
-                                        value={GPU === null ? '' : (GPU.endsWith('mm') ? GPU.slice(0, -2) : GPU)}
-                                        onChange={this.changeMyModelGPU}
-                                        pattern="[0-9]*" // This pattern only allows numbers
-                                        title="Please enter numbers only"
-                                    />
+                                    <input type="text" className="form-control" value={GPU} onChange={this.changeMyModelGPU} />
                                     <small className="text-muted">* Required</small>
                                 </div>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text">Check Price Link</span>
-                                    <input type="text" className="form-control"
-                                        value={Link === null ? '' : Link}
-                                        onChange={this.changeMyModelLink} />
+                                    <input type="text" className="form-control" value={Link === null ? '' : Link} onChange={this.changeMyModelLink} />
                                 </div>
-                                {MyModelId === 0 ?
-                                    <button type="button"
-                                        className="btn btn-primary float-start"
-                                        onClick={() => this.createClick()}>
+                                {/* Conditionally render the button based on isCreating */}
+                                {this.state.isCreating ? (
+                                    <button type="button" className="btn btn-primary float-start" onClick={() => this.createClick()}>
                                         Create
-                                    </button> : null}
-                                {MyModelId !== 0 ?
-                                    <button type="button"
-                                        className="btn btn-primary float-start"
-                                        onClick={() => this.updateClick()}>
+                                    </button>
+                                ) : (
+                                    <button type="button" className="btn btn-primary float-start" onClick={() => this.updateClick()}>
                                         Update
-                                    </button> : null}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         )
     }

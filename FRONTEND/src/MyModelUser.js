@@ -333,7 +333,7 @@ export class MyModelUser extends Component {
                     </svg>
                   </button>
                 </div>
-                Supported GPU Length
+                Supported GPU Length(mm)
               </th>
               <th>
                 Prices
