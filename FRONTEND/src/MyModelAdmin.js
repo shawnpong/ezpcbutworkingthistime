@@ -341,6 +341,9 @@ export class MyModelAdmin extends Component {
                                 Size
                             </th>
                             <th>
+                                Prices
+                            </th>
+                            <th>
                                 Options
                             </th>
                         </tr>
