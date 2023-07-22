@@ -13,16 +13,19 @@ export class MyModelAdmin extends Component {
             Name: "",
             Size: "",
             Link: "",
+            GPU: "",
             Manufacturer: "",
             MyModelId: 0,
             MyModelIdFilter: "",
             NameFilter: "",
             SizeFilter: "",
+            GPUFilter: "",
             ManufacturerFilter: "",
             mymodelWithoutFilter: [],
             manufacturers: [],
             sizes: [],
-        }
+        };
+        this.changeGPUFilter = this.changeGPUFilter.bind(this);
     }
 
     FilterFn() {
@@ -30,6 +33,7 @@ export class MyModelAdmin extends Component {
         var NameFilter = this.state.NameFilter ?? '';
         var SizeFilter = this.state.SizeFilter ?? '';
         var ManufacturerFilter = this.state.ManufacturerFilter ?? '';
+        var GPUFilter = this.state.GPUFilter ?? '';
 
         var filteredData = this.state.mymodelWithoutFilter.filter(function (el) {
             var isMyModelIdMatch = MyModelIdFilter === '' || el.MyModelId.toString().toLowerCase().trim().includes(MyModelIdFilter.toString().toLowerCase().trim());
@@ -37,7 +41,9 @@ export class MyModelAdmin extends Component {
             var isSizeMatch = SizeFilter === '' || el.Size.toString().toLowerCase().trim().includes(SizeFilter.toString().toLowerCase().trim());
             var isManufacturerMatch = ManufacturerFilter === '' || el.Manufacturer.toString().toLowerCase().trim().includes(ManufacturerFilter.toString().toLowerCase().trim());
 
-            return isMyModelIdMatch && isNameMatch && isSizeMatch && isManufacturerMatch;
+            const isGPUMatch = GPUFilter === "" || parseInt(el.GPU) > parseInt(GPUFilter);
+
+            return isMyModelIdMatch && isNameMatch && isSizeMatch && isManufacturerMatch && isGPUMatch;
         });
 
         this.setState({ mymodel: filteredData });
@@ -76,14 +82,16 @@ export class MyModelAdmin extends Component {
         this.FilterFn();
     }
 
-    changeMyModelLink = (e) => {
-        this.setState({ Link: e.target.value });
+    changeGPUFilter = (e) => {
+        this.state.GPUFilter = e.target.value;
+        this.FilterFn();
     };
 
     refreshList() {
         fetch(variables.API_URL + 'mymodel/')
             .then(response => response.json())
             .then(data => {
+                data.sort((a, b) => a.MyModelId - b.MyModelId);
                 this.setState({ mymodel: data, mymodelWithoutFilter: data });
             });
     }
@@ -142,6 +150,14 @@ export class MyModelAdmin extends Component {
         this.setState({ Size: e.target.value });
     }
 
+    changeMyModelGPU = (e) => {
+        this.setState({ GPU: e.target.value });
+    }
+
+    changeMyModelLink = (e) => {
+        this.setState({ Link: e.target.value });
+    }
+
     addClick() {
         this.setState({
             modalTitle: "Add MyModel",
@@ -149,7 +165,8 @@ export class MyModelAdmin extends Component {
             Manufacturer: "",
             Size: "",
             Name: "",
-            Link: ""
+            Link: "",
+            GPU: "",
         });
     }
 
@@ -160,23 +177,46 @@ export class MyModelAdmin extends Component {
             Manufacturer: dep.Manufacturer,
             Name: dep.Name,
             Size: dep.Size,
-            Link: dep.Link
+            Link: dep.Link,
+            GPU: dep.GPU,
         });
     }
 
     createClick() {
+        const { Manufacturer, Name, Size, Link, GPU } = this.state;
+
+        // Check if GPU is null or empty string before proceeding
+        if (!GPU || GPU.trim() === '') {
+            alert('Please input a GPU length');
+            return; // Do not proceed with the API call
+        }
+
+        // Check if the GPU value ends with 'mm', if not, add 'mm' to it
+        const GPULength = GPU.trim().endsWith('mm') ? GPU.trim() : GPU.trim() + ' mm';
+
+        // Prepare the request body
+        const requestBody = {
+            Manufacturer,
+            Name,
+            Size,
+            GPU: GPULength, // Use the formatted GPULength
+        };
+
+        // Add the Link to the requestBody as a string if it is not an empty string
+        if (Link.trim() !== '') {
+            requestBody.Link = Link;
+        } else {
+            requestBody.Link = null; // Set the Link to null explicitly if it is empty
+        }
+
+        // Send the POST request with the requestBody
         fetch(variables.API_URL + "mymodel/", {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                Manufacturer: this.state.Manufacturer,
-                Name: this.state.Name,
-                Size: this.state.Size,
-                Link: this.state.Link
-            })
+            body: JSON.stringify(requestBody)
         })
             .then(res => {
                 if (res.ok) {
@@ -194,29 +234,56 @@ export class MyModelAdmin extends Component {
             });
     }
 
+
     updateClick() {
+        const { MyModelId, Manufacturer, Name, Size, Link, GPU } = this.state;
+
+        // Check if GPU is null or empty string before proceeding
+        if (!GPU || GPU.trim() === '') {
+            alert('Please input a GPU length');
+            return; // Do not proceed with the API call
+        }
+
+        // Check if the GPU value ends with 'mm', if not, add 'mm' to it
+        const GPULength = GPU.trim().endsWith('mm') ? GPU.trim() : GPU.trim() + ' mm';
+
+        // Prepare the request body
+        const requestBody = {
+            MyModelId,
+            Manufacturer,
+            Name,
+            Size,
+            GPU: GPULength, // Use the formatted GPULength
+        };
+
+        // Add the Link to the requestBody as a string if it is not an empty string
+        if (Link.trim() !== '') {
+            requestBody.Link = Link;
+        } else {
+            requestBody.Link = null; // Set the Link to null explicitly if it is empty
+        }
+
+        // Send the PUT request with the requestBody
         fetch(variables.API_URL + "mymodel/", {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                MyModelId: this.state.MyModelId,
-                Manufacturer: this.state.Manufacturer,
-                Name: this.state.Name,
-                Size: this.state.Size,
-                Link: this.state.Link
-            })
+            body: JSON.stringify(requestBody)
         })
             .then(res => res.json())
             .then((result) => {
                 alert(result);
                 this.refreshList();
-            }, (error) => {
-                alert('Failed');
             })
+            .catch(error => {
+                alert('Failed');
+            });
     }
+
+
+
 
     deleteClick(id) {
         if (window.confirm('Are you sure?')) {
@@ -244,6 +311,7 @@ export class MyModelAdmin extends Component {
             Name,
             Size,
             Link,
+            GPU,
             Manufacturer,
             MyModelId
         } = this.state;
@@ -341,6 +409,27 @@ export class MyModelAdmin extends Component {
                                 Size
                             </th>
                             <th>
+                                <div className="d-flex flex-row">
+                                    <input
+                                        className="form-control m-2"
+                                        onChange={this.changeGPUFilter}
+                                        value={this.state.GPUFilter}
+                                        placeholder="Filter"
+                                    />
+                                    <button type="button" className="btn btn-light" onClick={() => this.sortResult("GPU", true)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" className="btn btn-light" onClick={() => this.sortResult("GPU", false)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
+                                            <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                Supported GPU Length
+                            </th>
+                            <th>
                                 Prices
                             </th>
                             <th>
@@ -355,13 +444,14 @@ export class MyModelAdmin extends Component {
                                 <td>{dep.Manufacturer}</td>
                                 <td>{dep.Name}</td>
                                 <td>{dep.Size}</td>
+                                <td>{dep.GPU}</td>
                                 <td>
                                     {dep.Link ? (
                                         <button
                                             className="btn btn-primary"
                                             onClick={() => window.open(dep.Link, '_blank')}
                                         >
-                                            View on Amazon
+                                            Check Price
                                         </button>
                                     ) : (
                                         <span>No longer sold</span>
@@ -394,8 +484,7 @@ export class MyModelAdmin extends Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">{modalTitle}</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="close">
-                                </button>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
                             </div>
                             <div className="modal-body">
                                 <div className="input-group mb-3">
@@ -409,6 +498,7 @@ export class MyModelAdmin extends Component {
                                     <input type="text" className="form-control"
                                         value={Name}
                                         onChange={this.changeMyModelName} />
+                                    <small className="text-muted">* Required</small>
                                 </div>
                                 <div className="input-group mb-3">
                                     <span className="input-group-text">Size</span>
@@ -417,18 +507,28 @@ export class MyModelAdmin extends Component {
                                         onChange={this.changeMyModelSize} />
                                 </div>
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text">Link</span>
+                                    <span className="input-group-text">Supported GPU length</span>
+                                    <input type="text" className="form-control"
+                                        value={GPU === null ? '' : (GPU.endsWith('mm') ? GPU.slice(0, -2) : GPU)}
+                                        onChange={this.changeMyModelGPU}
+                                        pattern="[0-9]*" // This pattern only allows numbers
+                                        title="Please enter numbers only"
+                                    />
+                                    <small className="text-muted">* Required</small>
+                                </div>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text">Check Price Link</span>
                                     <input type="text" className="form-control"
                                         value={Link === null ? '' : Link}
                                         onChange={this.changeMyModelLink} />
                                 </div>
-                                {MyModelId == 0 ?
+                                {MyModelId === 0 ?
                                     <button type="button"
                                         className="btn btn-primary float-start"
                                         onClick={() => this.createClick()}>
                                         Create
                                     </button> : null}
-                                {MyModelId != 0 ?
+                                {MyModelId !== 0 ?
                                     <button type="button"
                                         className="btn btn-primary float-start"
                                         onClick={() => this.updateClick()}>
@@ -438,6 +538,7 @@ export class MyModelAdmin extends Component {
                         </div>
                     </div>
                 </div>
+
             </div>
         )
     }

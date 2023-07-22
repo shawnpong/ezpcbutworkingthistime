@@ -33,6 +33,15 @@ async def process_link(link, mymodels, manufacturers, sizes):
                         print("Size:", size)
                         sizes.append({'Size': size})
 
+            for asd in asds:
+                dt_tags = asd.find_all('dt', string='Supported GPU length')
+                for dt_tag in dt_tags:
+                    dd_tag = dt_tag.find_next_sibling('dd')
+                    if dd_tag:
+                        gpu = dd_tag.text.strip()
+                        print("GPU:", gpu)
+                        # sizes.append({'Size': size})
+
             manufacturer = None
             for asd in asds:
                 dt_tags = asd.find_all('dt', string='Producer')
@@ -47,6 +56,7 @@ async def process_link(link, mymodels, manufacturers, sizes):
                 'Manufacturer': manufacturer,
                 'Name': names,
                 'Size': size,
+                'GPU' : gpu,
                 'Link': link
             }
             mymodels.append(mymodel)
@@ -55,6 +65,39 @@ async def process_link(link, mymodels, manufacturers, sizes):
     except Exception as e:
         print("Error accessing link:", link)
         print("Error details:", e)
+        
+async def insert_data(mymodels, manufacturers, sizes):
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+
+    sizes = [dict(t) for t in {tuple(d.items()) for d in sizes}]
+    manufacturers = [dict(t) for t in {tuple(d.items()) for d in manufacturers}]
+
+    async with httpx.AsyncClient() as batch_client:
+        response = await batch_client.post(api_url + "mymodel/batch_create/", json=mymodels, headers=headers)
+        print(response.content)
+        if response.status_code == 200:
+            print("mymodels inserted successfully")
+        else:
+            print("mymodels failed to insert data")
+
+    async with httpx.AsyncClient() as batch_client:
+        response = await batch_client.post(api_url + "manufacturers/batch_create/", json=manufacturers, headers=headers)
+        print(response.content)
+        if response.status_code == 200:
+            print("manufacturers inserted successfully")
+        else:
+            print("manufacturers failed to insert data")
+
+    async with httpx.AsyncClient() as batch_client:
+        response = await batch_client.post(api_url + "sizes/batch_create/", json=sizes, headers=headers)
+        print(response.content)
+        if response.status_code == 200:
+            print("sizes inserted successfully")
+        else:
+            print("sizes failed to insert data")
 
 async def main():
     async with httpx.AsyncClient() as client:
@@ -67,56 +110,33 @@ async def main():
     sizes = []
 
     tasks = []
-
-    link_count = 0  # Counter to keep track of the number of links processed
+    batch_size = 100
+    batch_delay = 5  # Seconds to wait between batches
 
     for div_element in soup.find_all('div', class_='column col-10 col-lg-8 col-sm-12'):
         for link in div_element.find_all('a'):
             href = link.get('href')
             tasks.append(process_link(href, mymodels, manufacturers, sizes))
 
-            link_count += 1  # Increment the link counter
+            if len(tasks) == batch_size:
+                await asyncio.gather(*tasks)
+                tasks = []
+                print(f"Processed {batch_size} links.")
 
-            if link_count % 100 == 0:  # Check if 100 links have been processed
-                await asyncio.gather(*tasks)  # Process the current batch of links
-                tasks = []  # Reset the tasks list for the next batch
+                # Insert data after processing each batch
+                await insert_data(mymodels, manufacturers, sizes)
+                mymodels = []
+                manufacturers = []
+                sizes = []
 
-    if tasks:  # Process any remaining links if the total count is not a multiple of 100
+                print(f"Waiting {batch_delay} seconds before the next batch...")
+                await asyncio.sleep(batch_delay)
+
+    # Process any remaining links in the last batch
+    if tasks:
         await asyncio.gather(*tasks)
 
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-    
-    sizes = [dict(t) for t in {tuple(d.items()) for d in sizes}]
-    manufacturers = [dict(t) for t in {tuple(d.items()) for d in manufacturers}]
-
-    # Batch create mymodels
-    async with httpx.AsyncClient() as batch_client:
-        response = await batch_client.post(api_url + "mymodel/batch_create/", json=mymodels, headers=headers)
-        print(response.content)
-        if response.status_code == 200:
-            print("mymodels inserted successfully")
-        else:
-            print("mymodels failed to insert data")
-
-    # Batch create manufacturers
-    async with httpx.AsyncClient() as batch_client:
-        response = await batch_client.post(api_url + "manufacturers/batch_create/", json=manufacturers, headers=headers)
-        print(response.content)
-        if response.status_code == 200:
-            print("manufacturers inserted successfully")
-        else:
-            print("manufacturers failed to insert data")
-
-    # Batch create sizes
-    async with httpx.AsyncClient() as batch_client:
-        response = await batch_client.post(api_url + "sizes/batch_create/", json=sizes, headers=headers)
-        print(response.content)
-        if response.status_code == 200:
-            print("sizes inserted successfully")
-        else:
-            print("sizes failed to insert data")
+    # Insert data for the last batch
+    await insert_data(mymodels, manufacturers, sizes)
 
 asyncio.run(main())

@@ -6,6 +6,7 @@ class MyModel(models.Model):
     Manufacturer = models.CharField(max_length=100)
     Name = models.CharField(max_length=100, unique=True)
     Size = models.CharField(max_length=100)
+    GPU = models.CharField(max_length=100)
     Link = models.URLField(max_length=500, null=True)
 
 

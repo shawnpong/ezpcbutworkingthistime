@@ -1,4 +1,5 @@
 import React from 'react';
+import './App.css';
 import { Home } from './Home';
 import { MyModelUser } from './MyModelUser';
 import { MyModelAdmin } from './MyModelAdmin';

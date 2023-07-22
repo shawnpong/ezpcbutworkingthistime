@@ -15,17 +15,18 @@ export class MyModelUser extends Component {
       modalTitle: "",
       Name: "",
       Size: "",
+      GPU: "",
       Manufacturer: "",
       MyModelId: 0,
-
       MyModelIdFilter: "",
       NameFilter: "",
       SizeFilter: "",
+      GPUFilter: "",
       ManufacturerFilter: "",
       mymodelWithoutFilter: [],
       manufacturers: [],
       sizes: [],
-    }
+    };
   }
 
   FilterFn() {
@@ -34,7 +35,8 @@ export class MyModelUser extends Component {
       NameFilter,
       SizeFilter,
       ManufacturerFilter,
-      mymodelWithoutFilter
+      mymodelWithoutFilter,
+      GPUFilter,
     } = this.state;
 
     const filteredData = mymodelWithoutFilter.filter(el => {
@@ -43,7 +45,9 @@ export class MyModelUser extends Component {
       const isSizeMatch = SizeFilter === '' || el.Size.toString().toLowerCase().trim() === SizeFilter.toString().toLowerCase().trim();
       const isManufacturerMatch = ManufacturerFilter === '' || el.Manufacturer.toString().toLowerCase().trim() === ManufacturerFilter.toString().toLowerCase().trim();
 
-      return isMyModelIdMatch && isNameMatch && isSizeMatch && isManufacturerMatch;
+      const isGPUMatch = GPUFilter === "" || parseInt(el.GPU) > parseInt(GPUFilter);
+
+      return isMyModelIdMatch && isNameMatch && isSizeMatch && isManufacturerMatch && isGPUMatch;
     });
 
     this.setState({ mymodel: filteredData });
@@ -81,14 +85,11 @@ export class MyModelUser extends Component {
     this.setState({ mymodel: filteredData });
   }
 
-
   changeMyModelIdFilter = (e) => {
     this.setState({ MyModelIdFilter: e.target.value }, () => {
       this.FilterFn();
     });
   }
-
-
 
   changeNameFilter = (e) => {
     this.setState({ NameFilter: e.target.value }, () => {
@@ -102,6 +103,11 @@ export class MyModelUser extends Component {
     });
   }
 
+  changeGPUFilter = (e) => {
+    this.setState({ GPUFilter: e.target.value }, () => {
+      this.FilterFn();
+    });
+  };
 
   changeManufacturerFilter = (e) => {
     this.setState({ ManufacturerFilter: e.target.value }, () => {
@@ -109,11 +115,11 @@ export class MyModelUser extends Component {
     });
   }
 
-
   refreshList() {
     fetch(variables.API_URL + 'mymodel/')
       .then(response => response.json())
       .then(data => {
+        data.sort((a, b) => a.MyModelId - b.MyModelId);
         this.setState({ mymodel: data, mymodelWithoutFilter: data });
       });
   }
@@ -249,6 +255,7 @@ export class MyModelUser extends Component {
       modalTitle,
       Name,
       sizes,
+      GPU,
       manufacturers,
       MyModelId
     } = this.state;
@@ -308,6 +315,27 @@ export class MyModelUser extends Component {
                 Size
               </th>
               <th>
+                <div className="d-flex flex-row">
+                  <input
+                    className="form-control m-2"
+                    onChange={this.changeGPUFilter}
+                    value={this.state.GPUFilter} // Bind the input value to the state variable
+                    placeholder="GPU Length"
+                  />
+                  <button type="button" className="btn btn-light" onClick={() => this.sortResult("GPU", true)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+                      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z" />
+                    </svg>
+                  </button>
+                  <button type="button" className="btn btn-light" onClick={() => this.sortResult("GPU", false)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
+                      <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0z" />
+                    </svg>
+                  </button>
+                </div>
+                Supported GPU Length
+              </th>
+              <th>
                 Prices
               </th>
             </tr>
@@ -318,13 +346,14 @@ export class MyModelUser extends Component {
                 <td>{dep.Manufacturer}</td>
                 <td>{dep.Name}</td>
                 <td>{dep.Size}</td>
+                <td>{dep.GPU}</td>
                 <td>
                   {dep.Link ? (
                     <button
                       className="btn btn-primary"
                       onClick={() => window.open(dep.Link, '_blank')}
                     >
-                      View on Amazon
+                      Check Price
                     </button>
                   ) : (
                     <span>No longer sold</span>

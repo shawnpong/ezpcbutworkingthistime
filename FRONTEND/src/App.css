@@ -1,6 +1,10 @@
 .App {
-  text-align: center;
+  text-align: left;
+  width: 100%; /* Increase the width to 100% */
+  max-width: 1200px; /* Set a maximum width if you want to limit the width */
+  margin: 0 auto; /* Center the container horizontally */
 }
+
 
 .App-logo {
   height: 40vmin;
