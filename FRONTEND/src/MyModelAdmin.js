@@ -8,6 +8,12 @@ export class MyModelAdmin extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            errors: {
+                Manufacturer: '',
+                Name: '',
+                Size: '',
+                GPU: '',
+            },
             mymodel: [],
             modalTitle: "",
             Name: "",
@@ -153,10 +159,10 @@ export class MyModelAdmin extends Component {
     changeMyModelGPU = (e) => {
         // Extract the value from the input
         const inputValue = e.target.value;
-    
+
         // Use a regular expression to check if the input contains only numeric characters
         const numericRegex = /^[0-9]*$/;
-    
+
         // Check if the input matches the numeric regex
         if (numericRegex.test(inputValue)) {
             // If it's a valid numeric input, update the state
@@ -202,8 +208,44 @@ export class MyModelAdmin extends Component {
             Manufacturer,
             Name,
             Size,
-            GPU, // Use the formatted GPULength
+            GPU,
+            Link,
         };
+        const requiredFields = ['Manufacturer', 'Name', 'Size', 'GPU'];
+        const newErrors = { ...this.state.errors };
+
+        let hasErrors = false;
+        let errorMessage = ''; // New error message variable to store all required field errors
+
+        requiredFields.forEach((field) => {
+            if (!this.state[field]) {
+                errorMessage += `${field}, `;
+                hasErrors = true;
+            } else {
+                newErrors[field] = '';
+            }
+        });
+
+        function isValidURL(url) {
+            const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
+            return urlPattern.test(url);
+        }
+
+        if (Link && !isValidURL(Link)) {
+            errorMessage += 'Invalid URL';
+            hasErrors = true;
+        } else {
+            newErrors['Link'] = '';
+        }
+
+        if (hasErrors) {
+            if (errorMessage.endsWith(', ')) {
+                errorMessage = errorMessage.slice(0, -2); // Remove trailing comma and space
+            }
+            this.setState({ errors: newErrors });
+            alert(`Failed to add. Missing required fields or invalid URL: ${errorMessage}`);
+            return;
+        }
 
         // Add the Link to the requestBody as a string if it is not an empty string
         if (Link !== '') {
@@ -232,21 +274,58 @@ export class MyModelAdmin extends Component {
                 alert(result);
                 this.refreshList();
             })
-            // .catch(error => {
-            //     alert(error.message);
-            // });
+            .catch(error => {
+                alert(error.message);
+            });
     }
 
 
+
     updateClick() {
-        const { MyModelId, Manufacturer, Name, Size, Link, GPU } = this.state;
+        const { Manufacturer, Name, Size, Link, GPU } = this.state;
+        // Prepare the request body
         const requestBody = {
-            MyModelId,
             Manufacturer,
             Name,
             Size,
             GPU,
+            Link,
         };
+        const requiredFields = ['Manufacturer', 'Name', 'Size', 'GPU'];
+        const newErrors = { ...this.state.errors };
+
+        let hasErrors = false;
+        let errorMessage = ''; // New error message variable to store all required field errors
+
+        requiredFields.forEach((field) => {
+            if (!this.state[field]) {
+                errorMessage += `${field}, `;
+                hasErrors = true;
+            } else {
+                newErrors[field] = '';
+            }
+        });
+
+        function isValidURL(url) {
+            const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
+            return urlPattern.test(url);
+        }
+
+        if (Link && !isValidURL(Link)) {
+            errorMessage += 'Invalid URL';
+            hasErrors = true;
+        } else {
+            newErrors['Link'] = '';
+        }
+
+        if (hasErrors) {
+            if (errorMessage.endsWith(', ')) {
+                errorMessage = errorMessage.slice(0, -2); // Remove trailing comma and space
+            }
+            this.setState({ errors: newErrors });
+            alert(`Failed to add. Missing required fields or invalid URL: ${errorMessage}`);
+            return;
+        }
 
         // Add the Link to the requestBody as a string if it is not an empty string
         if (Link !== '') {
