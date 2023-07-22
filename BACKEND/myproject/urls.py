@@ -12,6 +12,7 @@ from myapp.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("mymodel/", MyModelApi),
+    path("mymodel/<int:id>/", MyModelApi),
     path("mymodel/batch_create/", MyModelBatchCreateApi),
     path("manufacturers/", ManufacturersApi),
     path("manufacturers/batch_create/", ManufacturersBatchCreateApi),

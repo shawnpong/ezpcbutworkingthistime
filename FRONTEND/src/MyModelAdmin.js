@@ -12,6 +12,7 @@ export class MyModelAdmin extends Component {
             modalTitle: "",
             Name: "",
             Size: "",
+            Link: "",
             Manufacturer: "",
             MyModelId: 0,
             MyModelIdFilter: "",
@@ -74,6 +75,10 @@ export class MyModelAdmin extends Component {
         this.state.ManufacturerFilter = e.target.value;
         this.FilterFn();
     }
+
+    changeMyModelLink = (e) => {
+        this.setState({ Link: e.target.value });
+    };
 
     refreshList() {
         fetch(variables.API_URL + 'mymodel/')
@@ -143,7 +148,8 @@ export class MyModelAdmin extends Component {
             MyModelId: "",
             Manufacturer: "",
             Size: "",
-            Name: ""
+            Name: "",
+            Link: ""
         });
     }
 
@@ -153,7 +159,8 @@ export class MyModelAdmin extends Component {
             MyModelId: dep.MyModelId,
             Manufacturer: dep.Manufacturer,
             Name: dep.Name,
-            Size: dep.Size
+            Size: dep.Size,
+            Link: dep.Link
         });
     }
 
@@ -165,10 +172,10 @@ export class MyModelAdmin extends Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                // MyModelId:this.state.MyModelId,
                 Manufacturer: this.state.Manufacturer,
                 Name: this.state.Name,
-                Size: this.state.Size
+                Size: this.state.Size,
+                Link: this.state.Link
             })
         })
             .then(res => {
@@ -198,7 +205,8 @@ export class MyModelAdmin extends Component {
                 MyModelId: this.state.MyModelId,
                 Manufacturer: this.state.Manufacturer,
                 Name: this.state.Name,
-                Size: this.state.Size
+                Size: this.state.Size,
+                Link: this.state.Link
             })
         })
             .then(res => res.json())
@@ -228,12 +236,14 @@ export class MyModelAdmin extends Component {
                 })
         }
     }
+
     render() {
         const {
             mymodel,
             modalTitle,
             Name,
             Size,
+            Link,
             Manufacturer,
             MyModelId
         } = this.state;
@@ -343,6 +353,18 @@ export class MyModelAdmin extends Component {
                                 <td>{dep.Name}</td>
                                 <td>{dep.Size}</td>
                                 <td>
+                                    {dep.Link ? (
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={() => window.open(dep.Link, '_blank')}
+                                        >
+                                            View on Amazon
+                                        </button>
+                                    ) : (
+                                        <span>No longer sold</span>
+                                    )}
+                                </td>
+                                <td>
                                     <button type="button"
                                         className="btn btn-light mr-1"
                                         data-bs-toggle="modal"
@@ -390,6 +412,12 @@ export class MyModelAdmin extends Component {
                                     <input type="text" className="form-control"
                                         value={Size}
                                         onChange={this.changeMyModelSize} />
+                                </div>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text">Link</span>
+                                    <input type="text" className="form-control"
+                                        value={Link === null ? '' : Link}
+                                        onChange={this.changeMyModelLink} />
                                 </div>
                                 {MyModelId == 0 ?
                                     <button type="button"

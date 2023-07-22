@@ -307,15 +307,29 @@ export class MyModelUser extends Component {
                 </div>
                 Size
               </th>
+              <th>
+                Prices
+              </th>
             </tr>
           </thead>
           <tbody>
             {mymodel.map(dep =>
               <tr key={dep.Name}>
-                {/* <td>{dep.MyModelId}</td> */}
                 <td>{dep.Manufacturer}</td>
                 <td>{dep.Name}</td>
                 <td>{dep.Size}</td>
+                <td>
+                  {dep.Link ? (
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => window.open(dep.Link, '_blank')}
+                    >
+                      View on Amazon
+                    </button>
+                  ) : (
+                    <span>No longer sold</span>
+                  )}
+                </td>
               </tr>)}
           </tbody>
         </table>
