@@ -133,23 +133,30 @@ export class MyModelUser extends Component {
     fetch(variables.API_URL + "manufacturers/")
       .then(response => response.json())
       .then(data => {
-        this.setState({ manufacturers: data }); // Update the state with fetched manufacturers
+        // Sort manufacturers by name in alphabetical order
+        const sortedManufacturers = data.sort((a, b) =>
+          a.Manufacturer.localeCompare(b.Manufacturer)
+        );
+        this.setState({ manufacturers: sortedManufacturers });
       })
       .catch(error => {
         console.error('Error fetching manufacturers:', error);
       });
   }
-
+  
   fetchSizes() {
     fetch(variables.API_URL + "sizes/")
       .then(response => response.json())
       .then(data => {
-        this.setState({ sizes: data }); // Update the state with fetched manufacturers
+        // Sort sizes by name in alphabetical order
+        const sortedSizes = data.sort((a, b) => a.Size.localeCompare(b.Size));
+        this.setState({ sizes: sortedSizes });
       })
       .catch(error => {
         console.error('Error fetching sizes:', error);
       });
   }
+  
 
   render() {
     const {
