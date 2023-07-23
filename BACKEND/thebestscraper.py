@@ -128,7 +128,7 @@ async def main():
 
     tasks = []
     batch_size = 100
-    batch_delay = 0  # Seconds to wait between batches
+    batch_delay = 1  # Seconds to wait between batches
 
     # Loop through each link and create tasks to process them
     for div_element in soup.find_all("div", class_="column col-10 col-lg-8 col-sm-12"):
