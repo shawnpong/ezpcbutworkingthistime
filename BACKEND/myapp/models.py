@@ -11,8 +11,8 @@ class MyModel(models.Model):
 
 # Manufacturers table to store unique manufacturer names
 class Manufacturers(models.Model):
-    Manufacturer = models.CharField(max_length=100, unique=True)  # Manufacturer name (should be unique)
+    Manufacturer = models.CharField(max_length=100)  # Manufacturer name (should be unique)
 
 # Sizes table to store unique PC component sizes
 class Sizes(models.Model):
-    Size = models.CharField(max_length=100, unique=True)  # Size of the PC component (should be unique)
+    Size = models.CharField(max_length=100)  # Size of the PC component (should be unique)
