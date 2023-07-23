@@ -6,7 +6,6 @@ from asgiref.sync import sync_to_async
 import httpx
 from bs4 import BeautifulSoup
 import re
-# from myapp.models import MyModel, Manufacturers, Sizes
 
 # Set up Django environment
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myproject.settings")
@@ -112,7 +111,6 @@ async def insert_data(mymodels):
         response = await batch_client.post(
             api_url + "mymodel/batch_create/", json=mymodels, headers=headers
         )
-        # print(response.content)
         if response.status_code == 200:
             print("mymodels inserted successfully")
         else:
@@ -127,8 +125,6 @@ async def main():
         soup = BeautifulSoup(html_content, "html.parser")
 
     mymodels = []
-    # manufacturers = []
-    # sizes = []
 
     tasks = []
     batch_size = 100

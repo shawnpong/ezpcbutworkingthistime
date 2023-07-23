@@ -28,12 +28,9 @@ export const MyModelAdmin = () => {
     }
   }, [navigate]);
 
-  // Rest of your code
-
   return (
     <div>
       <LogoutButton />
-      {/* Rest of your code */}
     </div>
   );
 };

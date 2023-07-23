@@ -118,7 +118,7 @@ export class MyModelUser extends Component {
     fetch(variables.API_URL + 'mymodel/')
       .then(response => response.json())
       .then(data => {
-        data.sort((a, b) => a.MyModelId - b.MyModelId);
+        data.sort((a, b) => a.Manufacturer.localeCompare(b.Manufacturer));
         this.setState({ mymodel: data, mymodelWithoutFilter: data });
       });
   }

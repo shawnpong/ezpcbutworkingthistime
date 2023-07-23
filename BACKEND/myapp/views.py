@@ -88,29 +88,3 @@ def MyModelBatchCreateApi(request):
         return Response("Batch Added Successfully")
     else:
         return Response(mymodels_serializer.errors, status=400)
-
-
-@api_view(["POST"])
-def ManufacturersBatchCreateApi(request):
-    manufacturers_data = request.data
-    manufacturers_serializer = ManufacturersSerializer(
-        data=manufacturers_data, many=True
-    )
-    if manufacturers_serializer.is_valid():
-        manufacturers_serializer.save()
-        return Response("Batch Added Successfully")
-    else:
-        return Response(manufacturers_serializer.errors, status=400)
-
-
-@api_view(["POST"])
-def SizesBatchCreateApi(request):
-    sizes_data = request.data
-    sizes_serializer = SizesSerializer(data=sizes_data, many=True)
-    if sizes_serializer.is_valid():
-        sizes_serializer.save()
-        return Response("Batch Added Successfully")
-    else:
-        return Response(sizes_serializer.errors, status=400)
-    
-    
