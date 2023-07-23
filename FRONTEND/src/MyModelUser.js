@@ -119,7 +119,7 @@ export class MyModelUser extends Component {
       .then(response => response.json())
       .then(data => {
         data.sort((a, b) => a.Manufacturer.localeCompare(b.Manufacturer));
-      this.setState({ mymodel: data, mymodelWithoutFilter: data });
+        this.setState({ mymodel: data, mymodelWithoutFilter: data });
       });
   }
 
@@ -143,7 +143,7 @@ export class MyModelUser extends Component {
         console.error('Error fetching manufacturers:', error);
       });
   }
-  
+
   fetchSizes() {
     fetch(variables.API_URL + "sizes/")
       .then(response => response.json())
@@ -156,7 +156,14 @@ export class MyModelUser extends Component {
         console.error('Error fetching sizes:', error);
       });
   }
-  
+
+  handleNameClick = (name) => {
+    // Construct the Google search URL
+    const searchQuery = encodeURIComponent(name);
+    const googleSearchUrl = `https://www.google.com/search?q=${searchQuery}&tbm=isch`;
+    // Open the URL in a new tab/window
+    window.open(googleSearchUrl, '_blank');
+  };
 
   render() {
     const {
@@ -253,7 +260,15 @@ export class MyModelUser extends Component {
             {mymodel.map(dep =>
               <tr key={dep.Name}>
                 <td>{dep.Manufacturer}</td>
-                <td>{dep.Name}</td>
+                <td>
+                  <a
+                    href="#"
+                    onClick={() => this.handleNameClick(dep.Name)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {dep.Name}
+                  </a>
+                </td>
                 <td>{dep.Size}</td>
                 <td>{dep.GPU}</td>
                 <td>
