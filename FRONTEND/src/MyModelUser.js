@@ -119,7 +119,7 @@ export class MyModelUser extends Component {
       .then(response => response.json())
       .then(data => {
         data.sort((a, b) => a.Manufacturer.localeCompare(b.Manufacturer));
-        this.setState({ mymodel: data, mymodelWithoutFilter: data });
+      this.setState({ mymodel: data, mymodelWithoutFilter: data });
       });
   }
 

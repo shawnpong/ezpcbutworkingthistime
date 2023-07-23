@@ -5,8 +5,6 @@ from myapp.views import (
     ManufacturersApi,
     SizesApi,
     MyModelBatchCreateApi,
-    ManufacturersBatchCreateApi,
-    SizesBatchCreateApi,
 )
 
 # Define the URL patterns for the Django application
@@ -21,9 +19,7 @@ urlpatterns = [
 
     # API endpoints for Manufacturers
     path("manufacturers/", ManufacturersApi),        # GET and POST request handling
-    path("manufacturers/batch_create/", ManufacturersBatchCreateApi),  # POST request for creating multiple Manufacturer objects
 
     # API endpoints for Sizes
     path("sizes/", SizesApi),                        # GET and POST request handling
-    path("sizes/batch_create/", SizesBatchCreateApi),# POST request for creating multiple Size objects
 ]
