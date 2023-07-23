@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { variables } from './Variables.js';
-import { tsConstructorType } from '@babel/types';
-import { useHistory } from 'react-router-dom';
 import LogoutButton from './login.js';
 
 export class MyModelAdmin extends Component {
     constructor(props) {
-        super(props);
+        super(props); // The initial state of the component
         this.state = {
             errors: {
                 Manufacturer: '',
@@ -31,9 +29,9 @@ export class MyModelAdmin extends Component {
             manufacturers: [],
             sizes: [],
         };
-        this.changeGPUFilter = this.changeGPUFilter.bind(this);
+        this.changeGPUFilter = this.changeGPUFilter.bind(this); // Binding the filter function to the class instance
     }
-
+    // Function to filter the data based on user input
     FilterFn() {
         var MyModelIdFilter = this.state.MyModelIdFilter ?? '';
         var NameFilter = this.state.NameFilter ?? '';
@@ -54,7 +52,7 @@ export class MyModelAdmin extends Component {
 
         this.setState({ mymodel: filteredData });
     }
-
+    // Function to sort the data based on the specified property and order (asc/desc)
     sortResult(prop, asc) {
         var sortedData = this.state.mymodelWithoutFilter.sort(function (a, b) {
             if (asc) {
@@ -67,7 +65,7 @@ export class MyModelAdmin extends Component {
 
         this.setState({ mymodel: sortedData });
     }
-
+    // Event handlers to update filter values and trigger filtering
     changeMyModelIdFilter = (e) => {
         this.state.MyModelIdFilter = e.target.value;
         this.FilterFn();
@@ -92,7 +90,7 @@ export class MyModelAdmin extends Component {
         this.state.GPUFilter = e.target.value;
         this.FilterFn();
     };
-
+    // Function to fetch data from the API and update the component state
     refreshList() {
         fetch(variables.API_URL + 'mymodel/')
             .then(response => response.json())
@@ -174,7 +172,7 @@ export class MyModelAdmin extends Component {
     changeMyModelLink = (e) => {
         this.setState({ Link: e.target.value });
     }
-
+    // Function to handle the "Add MyModel" button click and prepare the modal for adding a new entry
     addClick() {
         this.setState({
             modalTitle: "Add MyModel",
@@ -187,7 +185,7 @@ export class MyModelAdmin extends Component {
             isCreating: true,
         });
     }
-
+    // Function to handle the "Edit MyModel" button click and prepare the modal for editing an existing entry
     editClick(dep) {
         this.setState({
             modalTitle: "Edit MyModel",
@@ -200,7 +198,7 @@ export class MyModelAdmin extends Component {
             isCreating: false,
         });
     }
-
+    // Function to handle the "Create" button click and send a POST request to add a new entry
     createClick() {
         const { Manufacturer, Name, Size, Link, GPU } = this.state;
         // Prepare the request body
@@ -278,9 +276,7 @@ export class MyModelAdmin extends Component {
                 alert(error.message);
             });
     }
-
-
-
+    // Function to handle the "Create" button click and send a POST request to add a new entry
     updateClick() {
         const { Manufacturer, Name, Size, Link, GPU } = this.state;
         // Prepare the request body
@@ -352,7 +348,7 @@ export class MyModelAdmin extends Component {
                 alert('Failed');
             });
     }
-
+    // Function to handle the "Delete" button click and send a DELETE request to remove an entry
     deleteClick(id) {
         if (window.confirm('Are you sure?')) {
             fetch(variables.API_URL + "mymodel/" + id + "/", {
@@ -580,7 +576,6 @@ export class MyModelAdmin extends Component {
                                     <span className="input-group-text">Check Price Link</span>
                                     <input type="text" className="form-control" value={Link === null ? '' : Link} onChange={this.changeMyModelLink} />
                                 </div>
-                                {/* Conditionally render the button based on isCreating */}
                                 {this.state.isCreating ? (
                                     <button type="button" className="btn btn-primary float-start" onClick={() => this.createClick()}>
                                         Create

@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { variables } from './Variables.js';
-import axios from 'axios';
-import { tsConstructorType } from '@babel/types';
 
 export class MyModelUser extends Component {
   constructor(props) {
-    super(props);
+    super(props);    // Binding functions to the current component instance
     this.changeMyModelIdFilter = this.changeMyModelIdFilter.bind(this);
     this.changeNameFilter = this.changeNameFilter.bind(this);
     this.changeSizeFilter = this.changeSizeFilter.bind(this);
     this.changeManufacturerFilter = this.changeManufacturerFilter.bind(this);
     this.state = {
+      // Initial state
       mymodel: [],
       modalTitle: "",
       Name: "",
@@ -28,7 +27,7 @@ export class MyModelUser extends Component {
       sizes: [],
     };
   }
-
+  // Function to filter the data based on various filters
   FilterFn() {
     const {
       MyModelIdFilter,
@@ -52,7 +51,7 @@ export class MyModelUser extends Component {
 
     this.setState({ mymodel: filteredData });
   }
-
+  // Function to sort the results based on a given property and order
   sortResult(prop, asc) {
     const {
       NameFilter,
@@ -84,7 +83,7 @@ export class MyModelUser extends Component {
 
     this.setState({ mymodel: filteredData });
   }
-
+  // Event handlers to update filter values and trigger filtering
   changeMyModelIdFilter = (e) => {
     this.setState({ MyModelIdFilter: e.target.value }, () => {
       this.FilterFn();
@@ -114,7 +113,7 @@ export class MyModelUser extends Component {
       this.FilterFn();
     });
   }
-
+  // Function to fetch data from the API and update the component state
   refreshList() {
     fetch(variables.API_URL + 'mymodel/')
       .then(response => response.json())
@@ -150,103 +149,6 @@ export class MyModelUser extends Component {
       .catch(error => {
         console.error('Error fetching sizes:', error);
       });
-  }
-
-  changeMyModelName = (e) => {
-    this.setState({ Name: e.target.value });
-  }
-
-  addClick() {
-    this.setState({
-      modalTitle: "Add MyModel",
-      MyModelId: 0,
-      Name: "",
-      MyModelIdFilter: "",
-      NameFilter: "",
-      SizeFilter: "",
-      ManufacturerFilter: "",
-    });
-  }
-
-  clearFilters() {
-    this.setState({
-      MyModelIdFilter: "",
-      NameFilter: "",
-      SizeFilter: "",
-      ManufacturerFilter: "",
-    }, () => {
-      this.FilterFn();
-    });
-  }
-
-
-  editClick(dep) {
-    this.setState({
-      modalTitle: "Edit MyModel",
-      MyModelId: dep.MyModelId,
-      Name: dep.Name
-    });
-  }
-
-  createClick() {
-    fetch(variables.API_URL + "mymodel/", {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        Name: this.state.Name
-      })
-    })
-      .then(res => res.json())
-      .then((result) => {
-        alert(result);
-        this.refreshList();
-      }, (error) => {
-        alert('Failed');
-      })
-  }
-
-  updateClick() {
-    fetch(variables.API_URL + "mymodel/", {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        MyModelId: this.state.MyModelId,
-        Name: this.state.Name,
-        Size: this.state.Size
-      })
-    })
-      .then(res => res.json())
-      .then((result) => {
-        alert(result);
-        this.refreshList();
-      }, (error) => {
-        alert('Failed');
-      })
-  }
-
-  deleteClick(id) {
-    if (window.confirm('Are you sure?')) {
-      fetch(variables.API_URL + "mymodel/" + id + "/", {
-        method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(res => res.json())
-        .then((result) => {
-          alert(result);
-          this.refreshList();
-        }, (error) => {
-          alert('Failed');
-        })
-    }
   }
 
   render() {
@@ -362,37 +264,6 @@ export class MyModelUser extends Component {
               </tr>)}
           </tbody>
         </table>
-        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-hidden="true">
-          <div className="modal-dialog modal-lg modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">{modalTitle}</h5>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="close">
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="input-group mb-3">
-                  <span className="input-group-text">Name</span>
-                  <input type="text" className="form-control"
-                    value={Name}
-                    onChange={this.changeMyModelName} />
-                </div>
-                {MyModelId == 0 ?
-                  <button type="button"
-                    className="btn btn-primary float-start"
-                    onClick={() => this.createClick()}>
-                    Create
-                  </button> : null}
-                {MyModelId != 0 ?
-                  <button type="button"
-                    className="btn btn-primary float-start"
-                    onClick={() => this.updateClick()}>
-                    Update
-                  </button> : null}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     )
   }

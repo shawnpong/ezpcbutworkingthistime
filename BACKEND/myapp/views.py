@@ -8,8 +8,11 @@ from myapp.serializers import (
     ManufacturersSerializer,
     SizesSerializer,
 )
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 
+# View function for MyModel API
 @csrf_exempt
 def MyModelApi(request, id=0):
     if request.method == "GET":
@@ -41,6 +44,7 @@ def MyModelApi(request, id=0):
         return JsonResponse("Deleted Successfully", safe=False)
 
 
+# View function for Manufacturers API
 @csrf_exempt
 def ManufacturersApi(request):
     if request.method == "GET":
@@ -56,12 +60,12 @@ def ManufacturersApi(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+# View function for Sizes API
 @csrf_exempt
 def SizesApi(request):
     if request.method == "GET":
         sizes = Sizes.objects.all()
         serializer = SizesSerializer(sizes, many=True)
-        print(serializer.data)  # Add this print statement
         return JsonResponse(serializer.data, safe=False)
     elif request.method == "POST":
         size_data = JSONParser().parse(request)
@@ -72,10 +76,7 @@ def SizesApi(request):
         return JsonResponse(serializer.errors, status=400)
 
 
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
-
+# View functions for batch create APIs
 @api_view(["POST"])
 def MyModelBatchCreateApi(request):
     mymodels_data = request.data
