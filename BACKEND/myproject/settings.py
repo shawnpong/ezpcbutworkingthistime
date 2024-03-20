@@ -96,7 +96,7 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 import dj_database_url
 
 DATABASES = {
-    'default' : dj_database_url.parse('postgres://casesdb_user:cXFNrwwgVIHyoplFjAsZ0J0lzVXUE3D4@dpg-cigfqqtgkuvojj902dv0-a.singapore-postgres.render.com/casesdb')
+    'default' : dj_database_url.parse('postgres://casesdb_6oj8_user:btLQf6hdOBDf83gAu62UBavy2rGXm8Ym@dpg-cnt4m6n109ks73b4b28g-a.oregon-postgres.render.com/casesdb_6oj8')
 }
 
 # Password validation
